@@ -1,0 +1,87 @@
+# GA-SUM-03 / PE-U3 — Clúster CockroachDB de 3 nodos
+# PFC de referencia: ACC — Soporte Técnico ISP
+#
+# Uso:
+#   docker compose up -d
+#   docker exec -it crdb-node1 cockroach init --insecure   (una sola vez)
+#   docker exec -it crdb-node1 cockroach node status --insecure
+#
+# Consola web: http://localhost:8080 (crdb-node1). Si el 8080 ya está ocupado
+# en tu máquina (por ejemplo por otro servicio local), sobreescribe con una
+# variable de entorno antes de levantar el cluster:
+#   CRDB1_HTTP_PORT=8083 docker compose up -d
+#
+# --max-offset=4500ms (por defecto 500ms): en máquinas de desarrollo el reloj
+# de la VM de Docker Desktop (WSL2 en Windows) puede desincronizarse varios
+# segundos tras salir de suspensión, y CockroachDB rechaza arrancar si detecta
+# más desfase que max-offset. Este valor es una concesión de entorno de
+# laboratorio, documentada aquí a propósito; no se recomienda en producción.
+
+networks:
+  crdb-net:
+    name: crdb-net
+    driver: bridge
+
+volumes:
+  crdb-node1-data: {}
+  crdb-node2-data: {}
+  crdb-node3-data: {}
+
+services:
+  crdb-node1:
+    image: cockroachdb/cockroach:latest-v23.2
+    container_name: crdb-node1
+    hostname: crdb-node1
+    # locality simula 3 zonas operativas del ISP; sustenta la politica de replicacion por localidad
+    command: start --insecure --max-offset=4500ms --locality=zone=quevedo-centro --join=crdb-node1,crdb-node2,crdb-node3
+    ports:
+      - "26257:26257"
+      - "${CRDB1_HTTP_PORT:-8080}:8080"
+    volumes:
+      - crdb-node1-data:/cockroach/cockroach-data
+    networks: [crdb-net]
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health?ready=1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  crdb-node2:
+    image: cockroachdb/cockroach:latest-v23.2
+    container_name: crdb-node2
+    hostname: crdb-node2
+    command: start --insecure --max-offset=4500ms --locality=zone=quevedo-norte --join=crdb-node1,crdb-node2,crdb-node3
+    ports:
+      - "26258:26257"
+      - "8081:8080"
+    volumes:
+      - crdb-node2-data:/cockroach/cockroach-data
+    networks: [crdb-net]
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health?ready=1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  crdb-node3:
+    image: cockroachdb/cockroach:latest-v23.2
+    container_name: crdb-node3
+    hostname: crdb-node3
+    command: start --insecure --max-offset=4500ms --locality=zone=quevedo-sur --join=crdb-node1,crdb-node2,crdb-node3
+    ports:
+      - "26259:26257"
+      - "8082:8080"
+    volumes:
+      - crdb-node3-data:/cockroach/cockroach-data
+    networks: [crdb-net]
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health?ready=1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
