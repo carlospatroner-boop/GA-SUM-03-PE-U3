@@ -1,0 +1,28 @@
+# LaTeX
+docs/*.aux
+docs/*.log
+docs/*.out
+docs/*.toc
+docs/*.bbl
+docs/*.bcf
+docs/*.blg
+docs/*.run.xml
+docs/*.fls
+docs/*.fdb_latexmk
+docs/*.synctex.gz
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Docker (datos persistidos de los nodos, no van al repo)
+*-data/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Variables sensibles
+.env
