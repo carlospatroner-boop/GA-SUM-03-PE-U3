@@ -15,10 +15,9 @@ Asignatura: Aplicaciones Distribuidas (ISR-701) --- UTEQ, período 2026--2027 PP
 
 | Nombre | PFC de origen | Rol en esta práctica |
 |---|---|---|
-| [Nombre 1] | [código] | [pendiente de asignar] |
-| [Nombre 2] | [código] | [pendiente de asignar] |
-| [Nombre 3] | [código] | [pendiente de asignar] |
-| [Nombre 4] | [código] | [pendiente de asignar] |
+| Aucatoma Celorio, Jhinson Stalyn | AGLS – TiendaTech | Responsable de documentación |
+| Alvarez Parraga, Jeremy Alexis | ACC – Soporte Técnico ISP | Responsable de calidad |
+| Carpio Mendoza, Carlos José | ACC – Soporte Técnico ISP | Líder de desarrollo |
 
 ## Estructura del repositorio
 
